@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEXUS — Scientific Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Ambient background glow -->
+  <div class="ambient-glow"></div>
+
+  <!-- Main Calculator Shell -->
+  <div id="calculator" class="calc-shell">
+
+    <!-- Top Bar: Brand + Mode Toggle + History Toggle -->
+    <div class="top-bar">
+      <div class="brand">
+        <span class="brand-icon">◈</span>
+        <span class="brand-name">NEXUS</span>
+      </div>
+      <div class="mode-tabs">
+        <button class="mode-tab active" data-mode="calc" onclick="switchMode('calc')">CALC</button>
+        <button class="mode-tab" data-mode="currency" onclick="switchMode('currency')">CONVERT</button>
+      </div>
+      <button class="history-toggle" onclick="toggleHistory()" aria-label="Toggle history">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- ========== CALCULATOR MODE ========== -->
+    <div id="calc-mode" class="mode-panel active">
+
+      <!-- Display -->
+      <div class="display-container">
+        <div class="scanline-overlay"></div>
+        <div class="display-inner">
+          <div id="expression" class="display-expression"></div>
+          <div id="result" class="display-result">0</div>
+        </div>
+        <div class="display-badge">RAD</div>
+      </div>
+
+      <!-- Scientific Functions Row -->
+      <div class="sci-row">
+        <button class="btn btn-sci" onclick="sciFunc('sin')">sin</button>
+        <button class="btn btn-sci" onclick="sciFunc('cos')">cos</button>
+        <button class="btn btn-sci" onclick="sciFunc('tan')">tan</button>
+        <button class="btn btn-sci" onclick="sciFunc('log')">log</button>
+        <button class="btn btn-sci" onclick="sciFunc('sqrt')">√</button>
+        <button class="btn btn-sci" onclick="sciFunc('pow')">x²</button>
+      </div>
+
+      <!-- Extra Functions Row -->
+      <div class="sci-row">
+        <button class="btn btn-sci" onclick="sciFunc('ln')">ln</button>
+        <button class="btn btn-sci" onclick="sciFunc('pi')">π</button>
+        <button class="btn btn-sci" onclick="sciFunc('e')">e</button>
+        <button class="btn btn-sci" onclick="sciFunc('factorial')">n!</button>
+        <button class="btn btn-sci" onclick="sciFunc('inv')">1/x</button>
+        <button class="btn btn-sci" onclick="sciFunc('abs')">|x|</button>
+      </div>
+
+      <!-- Main Keypad -->
+      <div class="keypad">
+        <!-- Row 1 -->
+        <button class="btn btn-util" onclick="clearAll()">AC</button>
+        <button class="btn btn-util" onclick="backspace()">⌫</button>
+        <button class="btn btn-util" onclick="inputParenthesis()">( )</button>
+        <button class="btn btn-op" onclick="inputOp('/')">÷</button>
+
+        <!-- Row 2 -->
+        <button class="btn btn-num" onclick="inputNum('7')">7</button>
+        <button class="btn btn-num" onclick="inputNum('8')">8</button>
+        <button class="btn btn-num" onclick="inputNum('9')">9</button>
+        <button class="btn btn-op" onclick="inputOp('*')">×</button>
+
+        <!-- Row 3 -->
+        <button class="btn btn-num" onclick="inputNum('4')">4</button>
+        <button class="btn btn-num" onclick="inputNum('5')">5</button>
+        <button class="btn btn-num" onclick="inputNum('6')">6</button>
+        <button class="btn btn-op" onclick="inputOp('-')">−</button>
+
+        <!-- Row 4 -->
+        <button class="btn btn-num" onclick="inputNum('1')">1</button>
+        <button class="btn btn-num" onclick="inputNum('2')">2</button>
+        <button class="btn btn-num" onclick="inputNum('3')">3</button>
+        <button class="btn btn-op" onclick="inputOp('+')">+</button>
+
+        <!-- Row 5 -->
+        <button class="btn btn-num" onclick="inputNum('±')">±</button>
+        <button class="btn btn-num" onclick="inputNum('0')">0</button>
+        <button class="btn btn-num" onclick="inputNum('.')">.</button>
+        <button class="btn btn-equals" onclick="calculate()">=</button>
+      </div>
+    </div>
+
+    <!-- ========== CURRENCY MODE ========== -->
+    <div id="currency-mode" class="mode-panel">
+      <div class="display-container currency-display">
+        <div class="scanline-overlay"></div>
+        <div class="display-inner">
+          <div id="currency-label" class="display-expression">USD → NGN</div>
+          <div id="currency-result" class="display-result">0</div>
+        </div>
+      </div>
+
+      <!-- Currency Pair Selector -->
+      <div class="currency-pairs">
+        <button class="currency-pair active" data-pair="usd-ngn" onclick="selectPair('usd-ngn')">
+          <span class="pair-flag">🇺🇸 → 🇳🇬</span>
+          <span class="pair-label">USD → NGN</span>
+        </button>
+        <button class="currency-pair" data-pair="eur-usd" onclick="selectPair('eur-usd')">
+          <span class="pair-flag">🇪🇺 → 🇺🇸</span>
+          <span class="pair-label">EUR → USD</span>
+        </button>
+        <button class="currency-pair" data-pair="nok-usd" onclick="selectPair('nok-usd')">
+          <span class="pair-flag">🇳🇴 → 🇺🇸</span>
+          <span class="pair-label">NOK → USD</span>
+        </button>
+      </div>
+
+      <!-- Currency Input Pad -->
+      <div class="currency-input-section">
+        <div class="currency-amount-display">
+          <span class="currency-symbol" id="currency-sym">$</span>
+          <span class="currency-amount" id="currency-input">0</span>
+        </div>
+      </div>
+
+      <div class="keypad currency-keypad">
+        <button class="btn btn-num" onclick="currencyNum('7')">7</button>
+        <button class="btn btn-num" onclick="currencyNum('8')">8</button>
+        <button class="btn btn-num" onclick="currencyNum('9')">9</button>
+        <button class="btn btn-util" onclick="currencyClear()">AC</button>
+
+        <button class="btn btn-num" onclick="currencyNum('4')">4</button>
+        <button class="btn btn-num" onclick="currencyNum('5')">5</button>
+        <button class="btn btn-num" onclick="currencyNum('6')">6</button>
+        <button class="btn btn-util" onclick="currencyBackspace()">⌫</button>
+
+        <button class="btn btn-num" onclick="currencyNum('1')">1</button>
+        <button class="btn btn-num" onclick="currencyNum('2')">2</button>
+        <button class="btn btn-num" onclick="currencyNum('3')">3</button>
+        <button class="btn btn-op currency-swap" onclick="swapCurrency()">⇄</button>
+
+        <button class="btn btn-num currency-zero" onclick="currencyNum('0')">0</button>
+        <button class="btn btn-num" onclick="currencyNum('.')">.</button>
+        <button class="btn btn-equals currency-convert-btn" onclick="convertCurrency()">CONVERT</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Panel (Slide-in) -->
+  <div id="history-panel" class="history-panel">
+    <div class="history-header">
+      <h2 class="history-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        HISTORY
+      </h2>
+      <button class="history-clear" onclick="clearHistory()">CLEAR</button>
+    </div>
+    <div id="history-list" class="history-list">
+      <div class="history-empty">No calculations yet</div>
+    </div>
+  </div>
+
+  <!-- History Backdrop -->
+  <div id="history-backdrop" class="history-backdrop" onclick="toggleHistory()"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
